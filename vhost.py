@@ -31,39 +31,40 @@ def vhostdata( domain ):
 
                 access_log  %(sites_dir)s/%(domain)s/logs/access.log;
 	        error_log  %(sites_dir)s/%(domain)s/logs/error.log;
-		
-		# Redirect everything that isn't a real file to index.php
+
+	    	location / {
+			# Redirect everything that isn't a real file to index.php
 			try_files $uri $uri/ /index.php$is_args$args;
 	    	}
 
-	       # uncomment to avoid processing of calls to non-existing static files by Yii
-    	       location ~ \.(js|css|png|jpg|gif|swf|ico|pdf|mov|fla|zip|rar)$ {
+	        # uncomment to avoid processing of calls to non-existing static files by Yii
+    	        location ~ \.(js|css|png|jpg|gif|swf|ico|pdf|mov|fla|zip|rar)$ {
 	       		try_files $uri =404;
-               }
-               
-	       error_page 404 /404.html;
+                }
 
-       	      # deny accessing php files for the /assets directory
+	        error_page 404 /404.html;
 
-	      location ~ ^/assets/.*\.php$ {
-		   deny all;
-	      } 
+       	        # deny accessing php files for the /assets directory
 
-	      location ~ \.php$ {
-		   include snippets/fastcgi-php.conf;
- 		   fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-		   fastcgi_pass 127.0.0.1:9000;
-		   #fastcgi_pass unix:/var/run/php5-fpm.sock;
-		   # try_files $uri =404;
-	      }
+	        location ~ ^/assets/.*\.php$ {
+		       deny all;
+	        }
 
-	      location ~* /\. {
-		   deny all;
-	      }
-		
-              location ~*  \.(jpg|jpeg|bmp|png|gif|ico|css|js|JPG|woff|woff2|eot|svg|html|map|json|less|sass|ttf|ttf2|swf|otf|txt|pdf|mp4)$ {
- 			expires 8d;
-	      }
+	        location ~ \.php$ {
+	         	   include snippets/fastcgi-php.conf;
+ 		           fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+			   fastcgi_pass 127.0.0.1:9000;
+			   #fastcgi_pass unix:/var/run/php5-fpm.sock;
+			   # try_files $uri =404;
+       	        }
+
+  	        location ~* /\. {
+			   deny all;
+	        }
+
+                location ~*  \.(jpg|jpeg|bmp|png|gif|ico|css|js|JPG|woff|woff2|eot|svg|html|map|json|less|sass|ttf|ttf2|swf|otf|txt|pdf|mp4)$ {
+    		   	  expires 8d;
+	        }
 
 
 	} """ % {'domain':domain,'sites_dir':sites_dir,'html_dir':html_dir}
@@ -115,6 +116,7 @@ def vhostcreate(domain):
 				# os.system("a2ensite %s" % domain)
 				os.symlink(vhostfile, '/etc/nginx/sites-enabled/' + domain)
 				os.system("systemctl restart nginx")
+
 				print "All done! Please, take your time to check."
 		else:
 			vhostcreate( raw_input('Please, enter domain name: ') )
