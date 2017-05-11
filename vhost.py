@@ -31,10 +31,7 @@ def vhostdata( domain ):
 
                 access_log  %(sites_dir)s/%(domain)s/logs/access.log;
 	        error_log  %(sites_dir)s/%(domain)s/logs/error.log;
-
-	    	location / {location ~*  \.(jpg|jpeg|bmp|png|gif|ico|css|js|JPG|woff|woff2|eot|svg|html|map|json|less|sass|ttf|ttf2|swf|otf|txt|pdf|mp4)$ {
- expires 8d;
-}
+		
 		# Redirect everything that isn't a real file to index.php
 			try_files $uri $uri/ /index.php$is_args$args;
 	    	}
